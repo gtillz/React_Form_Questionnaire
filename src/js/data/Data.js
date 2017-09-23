@@ -52,7 +52,7 @@ const data = {
             "choices": [
                 "2617 km",
                 "3568 km",
-                "1732 km"
+                "1732 km",
             ]
         }
     ]

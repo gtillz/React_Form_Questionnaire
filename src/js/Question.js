@@ -1,29 +1,21 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
+import Choices from './Choices'
 
 Question.propTypes = {
-    currentQuestion: PropTypes.object.isRequired
+    currentQuestion: PropTypes.object.isRequired,
+    onSelectAnswer: PropTypes.func.isRequired,
 }
 
-function Question({currentQuestion}) {
-    const {question} = currentQuestion;
+function Question({currentQuestion, onSelectAnswer}) {
+    const {question, choices} = currentQuestion;
     return (
         <div className={`question`}>
-
             <h1>{question}</h1>
-
-                {/* Choices - start */}
-                <div className="choices">
-                    
-                    {/* Buttons - start */}
-                    <button className="btn btn-huge is-selected"><span className="letter">A</span> Melbourne</button>
-                    <button className="btn btn-huge"><span className="letter">B</span> New York</button>
-                    <button className="btn btn-huge"><span className="letter">C</span> London</button>
-                    {/* Buttons - end */}
-
-                </div>
-            {/* Choices - end */}
-
+                <Choices 
+                    choices={choices}
+                    onSelectAnswer={onSelectAnswer}
+                />
         </div>
     )
 }

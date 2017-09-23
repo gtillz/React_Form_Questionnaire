@@ -13,6 +13,12 @@ class App extends React.Component {
         allAnswers: []
       }
     }
+
+    //using an arrow function will automatically bind the method
+    onSelectAnswer = (answer) => {
+      console.log('Answer selected '+answer)
+    }
+
     render(){
       const {currentQuestion} = this.state;
         return (
@@ -38,7 +44,10 @@ class App extends React.Component {
                 </div>
                 {/* Progress - end */}
 
-                <Question currentQuestion={currentQuestion}/>
+                <Question 
+                  currentQuestion={currentQuestion}
+                  onSelectAnswer={this.onSelectAnswer}
+                />
 
                 {/* Results - start */}
                 <div className="results">
