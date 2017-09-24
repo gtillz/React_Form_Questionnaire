@@ -1,6 +1,7 @@
 import React from 'react';
 import data from './data/Data';
-import Question from './Question'
+import Question from './Question';
+import Results from './Results';
 
 class App extends React.Component {
 
@@ -8,25 +9,60 @@ class App extends React.Component {
       super(props);
       this.state = {
         allQuestions: data.allQuestions,
-        currentQuestion: data.allQuestions[4],
+        currentQuestion: data.allQuestions[0],
         progress: 0,
-        allAnswers: []
+        allAnswers: [],
+        loadNextQuestion: false,
+        showResults: false
       }
     }
 
     //using an arrow function will automatically bind the method
     onSelectAnswer = (answer) => {
-      console.log('Answer selected '+answer)
+     const {allAnswers} = this.state;
+
+      this.setState({
+        allAnswers: [...allAnswers, answer]
+      }, this.goToNextQuestion())
+
+    }
+
+    goToNextQuestion = () => {
+      const {allQuestions, progress} = this.state;
+      this.setState({
+        loadNextQuestion: true
+      })
+      
+      setTimeout(()=>{
+        if(progress < allQuestions.length - 1){
+          this.setState({
+            progress: progress + 1,
+            currentQuestion: allQuestions[progress + 1],
+            loadNextQuestion: false
+          })
+        } else {
+          this.setState({
+            loadNextQuestion: false,
+            showResults: true
+          })
+        }
+      }, 300)
+    }
+
+    onLoadResults = () => {
+      console.log('Load Results')
     }
 
     render(){
-      const {currentQuestion} = this.state;
+      const {currentQuestion, loadNextQuestion, showResults, allAnswers, allQuestions} = this.state;
+
         return (
             <div>
                   
               {/* Header - start */}
               <header>
-                  <img src="https://ihatetomatoes.net/react-tutorials/abc-quiz/images/plane.svg" />
+                  <img className={`fade-out ${loadNextQuestion ? 'fade-out-active' : ''}`}
+                  src="https://ihatetomatoes.net/react-tutorials/abc-quiz/images/plane.svg" />
               </header>
               {/* Header - end */}
 
@@ -44,26 +80,18 @@ class App extends React.Component {
                 </div>
                 {/* Progress - end */}
 
-                <Question 
-                  currentQuestion={currentQuestion}
-                  onSelectAnswer={this.onSelectAnswer}
-                />
-
-                {/* Results - start */}
-                <div className="results">
-                  <div className="loader"><div className="icon"></div></div>
-                  <div className="results-overlay"></div>
-                  <h1>Here are your answers:</h1>
-                  <div className="answers">
-                    <ol>
-                      <li>What is the best city in the world? <br /><strong>Melbourne</strong></li>
-                    </ol>
-                  </div>
-                  <div className="text-center">
-                    <button className="btn btn-dark">Submit</button>
-                  </div>
-                </div>
-                {/* Results - end */}
+                {
+                  !showResults ? <Question 
+                    currentQuestion={currentQuestion}
+                    onSelectAnswer={this.onSelectAnswer}
+                    loadNextQuestion={loadNextQuestion}
+                  /> : <Results 
+                    loadNextQuestion={loadNextQuestion}
+                    allQuestions={allQuestions}
+                    allAnswers={allAnswers}
+                    onLoadResults={this.onLoadResults}
+                  />
+                }
 
               </div>
               {/* Content - end */}
