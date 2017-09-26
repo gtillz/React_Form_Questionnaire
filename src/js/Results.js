@@ -7,9 +7,10 @@ Results.propTypes = {
     allQuestions: PropTypes.array.isRequired,
     allAnswers: PropTypes.array.isRequired,
     onLoadResults: PropTypes.func.isRequired,
+    correctAnswers: PropTypes.array
 }
 
-function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults}) {
+function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults, correctAnswers}) {
     return (
         <div className={`results fade-out ${loadNextQuestion ? 'fade-out-active' : ''}`}>
             <div className="loader"><div className="icon"></div></div>
@@ -19,6 +20,7 @@ function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults}) {
                 <Answers 
                     allQuestions={allQuestions}
                     allAnswers={allAnswers}
+                    correctAnswers={correctAnswers}
                 />
             </div>
             <div className="text-center">

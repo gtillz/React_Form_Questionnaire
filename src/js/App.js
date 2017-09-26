@@ -2,6 +2,9 @@ import React from 'react';
 import data from './data/Data';
 import Question from './Question';
 import Results from './Results';
+import Progress from './Progress';
+import Navigation from './Navigation';
+import Arrow from './Arrow';
 
 class App extends React.Component {
 
@@ -13,7 +16,9 @@ class App extends React.Component {
         progress: 0,
         allAnswers: [],
         loadNextQuestion: false,
-        showResults: false
+        showResults: false,
+        loadingResults: false,
+        correctAnswers: null
       }
     }
 
@@ -50,36 +55,48 @@ class App extends React.Component {
     }
 
     onLoadResults = () => {
-      console.log('Load Results')
+      this.setState({
+        loadingResults: true
+      })
+
+      fetch('https://api.myjson.com/bins/zgpjb')
+      .then(response => response.json())
+      .then(parsedJSON => {
+        const correctAnswers = parsedJSON.correctAnswers;
+
+        this.setState({
+          correctAnswers,
+          loadingResults: false,
+          resultsLoaded: true
+        })
+
+      })
+      .catch(error => {
+        console.log('fetching answers failed', error)
+        this.setState({
+          loadingResults: false,
+          resultsLoaded: true
+        })
+      })
+
     }
 
     render(){
-      const {currentQuestion, loadNextQuestion, showResults, allAnswers, allQuestions} = this.state;
-
+      const {currentQuestion, loadNextQuestion, showResults, allAnswers, allQuestions, loadingResults, correctAnswers, resultsLoaded, progress} = this.state;
+      const navIsActive = allAnswers.length > 0;
         return (
-            <div>
-                  
+            <div className={`${loadingResults ? 'is-loading-results' : ''} ${resultsLoaded ? 'is-showing-results' : 'no-results-loaded'}`}>         
               {/* Header - start */}
               <header>
                   <img className={`fade-out ${loadNextQuestion ? 'fade-out-active' : ''}`}
-                  src="https://ihatetomatoes.net/react-tutorials/abc-quiz/images/plane.svg" />
+                  src={currentQuestion.image} />
               </header>
               {/* Header - end */}
-
-              {/* Content - start */}
               <div className={`content`}>
-
-                {/* Progress - start */}
-                <div className="progress-container">
-                  <div className="progress-label">1 of 5 answered</div>
-                  <div className="progress">
-                    <div className="progress-bar" style={{'width': `20%`}}>
-                      <span className="sr-only">20% Complete</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Progress - end */}
-
+                <Progress 
+                  progress={allAnswers.length}
+                  total={allQuestions.length}
+                />
                 {
                   !showResults ? <Question 
                     currentQuestion={currentQuestion}
@@ -90,23 +107,25 @@ class App extends React.Component {
                     allQuestions={allQuestions}
                     allAnswers={allAnswers}
                     onLoadResults={this.onLoadResults}
+                    correctAnswers={correctAnswers}
                   />
                 }
-
               </div>
-              {/* Content - end */}
 
-              {/* Navigation - start */}
-              <div className={`navigation text-center is-active`}>
-                <button className={`arrow`}>
-                    <img src="https://ihatetomatoes.net/react-tutorials/abc-quiz/fonts/navigation-left-arrow.svg" />
-                </button>
-                <button disabled className={`arrow is-disabled`}>
-                    <img src="https://ihatetomatoes.net/react-tutorials/abc-quiz/fonts/navigation-right-arrow.svg" />
-                </button>
+              {/* Navigation */}
+              <div className={`navigation text-center ${navIsActive ? 'is-active' : ''}`}>
+                <Arrow 
+                  direction='left'
+                  allAnswers={allAnswers}
+                  progress={progress}
+                />
+                <Arrow 
+                  direction='right'
+                  allAnswers={allAnswers}
+                  progress={progress}
+                />
               </div>
               {/* Navigation - end */}
-
             </div>
         )
     }
