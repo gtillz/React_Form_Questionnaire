@@ -7,15 +7,23 @@ Results.propTypes = {
     allQuestions: PropTypes.array.isRequired,
     allAnswers: PropTypes.array.isRequired,
     onLoadResults: PropTypes.func.isRequired,
-    correctAnswers: PropTypes.array
+    correctAnswers: PropTypes.array,
+    resultsLoaded: PropTypes.bool.isRequired,
+    onRestart: PropTypes.func.isRequired,
 }
 
-function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults, correctAnswers}) {
+function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults, correctAnswers, resultsLoaded, onRestart}) {
+
+    let numberOfCorrectAnswers = 0;
+    correctAnswers && allQuestions.map((question, index)=>{
+         correctAnswers[index] === allAnswers[index] && numberOfCorrectAnswers++;
+    })
+
     return (
         <div className={`results fade-out ${loadNextQuestion ? 'fade-out-active' : ''}`}>
             <div className="loader"><div className="icon"></div></div>
             <div className="results-overlay"></div>
-            <h1>Here are your answers:</h1>
+            <h1>{`${resultsLoaded ? `${numberOfCorrectAnswers} out of ${allQuestions.length} correct!` : 'Here are your answers:'}`}</h1>
             <div className="answers">
                 <Answers 
                     allQuestions={allQuestions}
@@ -24,7 +32,12 @@ function Results({loadNextQuestion, allQuestions, allAnswers, onLoadResults, cor
                 />
             </div>
             <div className="text-center">
-                <button className="btn btn-dark" onClick={(e)=>onLoadResults()}>Submit</button>
+                {
+                    resultsLoaded ? 
+                        <button className="btn btn-dark" onClick={(e)=>onRestart()}>Start Again</button>
+                    :
+                        <button className="btn btn-dark" onClick={(e)=>onLoadResults()}>Submit</button>
+                }
             </div>
         </div>
     )
